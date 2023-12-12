@@ -166,12 +166,14 @@ def write_to_csv(data_list):
             'IMG Genome Accession', 'PATRIC Genome Accession', 'Genome Length', 'Number of Contigs', 'N50',
             'GC Content', 'Genome Type', 'Completeness', 'Contamination', 'RNA 5S', 'RNA 16S', 'RNA 23S',
             'tRNAs', 'ncRNAs', 'Number of Proteins', 'EggNOG Coverage', 'InterPro Coverage', 'Taxon Lineage',
-            'Number of Genomes Total', 'Pangenome Size', 'Pangenome Core Size', 'Pangenome Accessory Size'
+            'Number of Genomes Total', 'Pangenome Size', 'Pangenome Core Size', 'Pangenome Accessory Size', 'Biome'
         ]
         writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
         writer.writeheader()
 
         for genome in data_list:
+            biome = genome.biome['id'] if genome.id else None
+            
             writer.writerow({
                 'Genome ID': genome.id,
                 'Geographic Origin': genome.attributes.geographic_origin,
@@ -203,7 +205,8 @@ def write_to_csv(data_list):
                 'Number of Genomes Total': genome.attributes.num_genomes_total,
                 'Pangenome Size': genome.attributes.pangenome_size,
                 'Pangenome Core Size': genome.attributes.pangenome_core_size,
-                'Pangenome Accessory Size': genome.attributes.pangenome_accessory_size
+                'Pangenome Accessory Size': genome.attributes.pangenome_accessory_size,
+                'Biome': biome
             })
 
 async def genome_search_async(args):
