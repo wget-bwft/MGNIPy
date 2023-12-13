@@ -149,6 +149,17 @@ async def fetch_all_genomes(args, filters):
                             biome_data = None
 
                         genome_obj = GenomeData(genome['id'], attributes, biome_data)
+                        
+                        if args.biome and genome_obj.biome:
+                            if not genome_obj.biome['id'].startswith(args.biome):
+                                continue
+
+                        if args.taxonomy:
+                            taxonomy_string = attributes.taxon_lineage.lower()
+                            found = any(word.lower() in taxonomy_string for word in args.taxonomy)
+                            if not found:
+                                continue
+
                         filtered_genomes.append(genome_obj)
 
                     # Move to the next page
@@ -206,7 +217,7 @@ def write_to_csv(data_list):
                 'Pangenome Size': genome.attributes.pangenome_size,
                 'Pangenome Core Size': genome.attributes.pangenome_core_size,
                 'Pangenome Accessory Size': genome.attributes.pangenome_accessory_size,
-                'Biome': biome
+                'Biome': genome.biome['id'] if genome.biome else None
             })
 
 async def genome_search_async(args):
@@ -302,16 +313,14 @@ if __name__ == "__main__":
     parser.add_argument('--pangenome-accessory-size', type=int, help='Pangenome Accessory Size')
     parser.add_argument('--num-proteins', type=int, help='Number of Proteins')
 
+    parser.add_argument('--biome', help='Biome information')
+    parser.add_argument('--taxonomy', help='Search taxonomy for specific keywords', nargs='+')
+    parser.add_argument('--output', help='Output CSV file name')
+
+
 
     args = parser.parse_args()
     asyncio.run(main_async(args))
-
-
-
-
-
-
-
 
 
 
